@@ -1,0 +1,28 @@
+import RPi.GPIO as GPIO
+import time    
+import urllib2,json
+
+READ_API_KEY='37D2JBH4TI4XPFMA'
+CHANNEL_ID= 697209
+P_LED = 9 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(P_LED,GPIO.OUT)
+while True:
+    conn = urllib2.urlopen("http://api.thingspeak.com/channels/%s/feeds/last.json?api_key=%s" \
+                           % (CHANNEL_ID,READ_API_KEY))
+
+    response = conn.read()
+    data=json.loads(response)
+    #print data
+    y=data['field3']
+    print y
+    conn.close()
+    if int(y) == 1:  # pressed
+                GPIO.output(P_LED,GPIO.HIGH)
+                time.sleep(1)
+                print('led on')          
+    else:
+            GPIO.output(P_LED,GPIO.LOW)
+            time.sleep(1)
+            print('led off')
